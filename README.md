@@ -1,2 +1,2 @@
 # Collections
-small application in one , practice / learning GUI framework [PyQt5] (only coding)
+**small applications all in one , practice / learning GUI framework [PyQt5] (only coding)**
