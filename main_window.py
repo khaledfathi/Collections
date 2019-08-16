@@ -7,14 +7,15 @@
 #Last Updates --: 16/08/2019
 #Author --------: Khaled Fathi [KhaledFathi@protonmail.com]
 #Code ----------: Python3.6 | Frameworks : PyQt5
-#repository ----: https://github.com/khaledfathi/Collections
+#repository ----: https://github.com/khaledfathi/Collections 
 
 import sys , time , math , os , pathlib
 #from app lib
-import license_app , ohm_app , stopwatch_app , temp_app , linux_app
+import license_app , ohm_app , stopwatch_app , temp_app , linux_app , timer_app
 #from PyQt
 from PyQt5.QtWidgets import QApplication , QMainWindow , QPushButton  , QAction , QMessageBox
 import PyQt5.uic 
+
 class app (QMainWindow) :
     "Main Application GUI ( parent=None )"
     def __init__ (self,parent=None) :
@@ -28,6 +29,7 @@ class app (QMainWindow) :
         self.stopwatch = stopwatch_app.stopwatch_gui(self.title + "[ Stopwatch]",self)
         self.temp = temp_app.temp_gui(self.title + " [Temperature conversions]", self )
         self.linux = linux_app.linux_gui(self.title+" [Linux Chmod Calculator]",self)
+        self.timer = timer_app.timer_gui(self.title + " [Timer]" , self)
 
     def initUI (self) :
         "main window"
@@ -115,6 +117,7 @@ class app (QMainWindow) :
         timer = QPushButton("Timer",self)
         timer.move(150,240)
         timer.setToolTip(tip_text)
+        timer.clicked.connect(self.timer_button)
 
         quit_ = QPushButton("Quit",self)
         quit_.move(80,300)
@@ -122,9 +125,12 @@ class app (QMainWindow) :
         quit_.setStyleSheet("background:red;color:white")
         quit_.clicked.connect(self.close)
 
-    #actions for menu bar
+    ##########################
+    ## Slot Method for menu ## 
+    ##########################
     #file > new
     def new_window(self):
+        "copy and run the current window"
         new_win = app(self)
         new_win.setStyleSheet("background:gray")
         new_win.left , new_win.top = 200,200
@@ -132,12 +138,16 @@ class app (QMainWindow) :
 
    #about > license
     def show_license (self):
+        "Run License Dialog"
         self.lic.initUI()
 
     def about_app (self):
+        "About message"
         QMessageBox.about(self,self.title+" [About App]","Practice with PyQt5 \nEmail me : Khaledfathi@protonmail.com")
-
-    #support methods
+    
+    ##################
+    ## Core Methods ##
+    ##################
     def load_and_reset (self,old_obj,new_obj,title , parent):
         "load GUI of specific app or reset it , and protect it from repeating \
         ( old_obj : target object , new_obj : import new class , title : window title , parrent : parent widget)"
@@ -150,7 +160,9 @@ class app (QMainWindow) :
         except Exception as e :
             old_obj.initUI()
                     
-    #action for buttons
+    ##############################
+    ## Slot Methods for buttons ##
+    ##############################
     def ohm_button (self):
         "run dialog [ohm application]"
         self.ohm = self.load_and_reset(self.ohm , ohm_app.ohm_gui , self.title + " [Ohm Calculator ]" , self)
@@ -167,12 +179,18 @@ class app (QMainWindow) :
         "run dailog [Linux chmod]"
         self.linux = self.load_and_reset(self.linux , linux_app.linux_gui , self.title + " [Linux chmod Calculator]" , self)
         
+    def timer_button (self):
+        "run dailog [Timer]"
+        self.timer = self.load_and_reset(self.timer , timer_app.timer_gui , self.title + " [Timer]", self)
+
+###################        
 def run_app ():
     "Run application Main GUI window"
     APP = QApplication(sys.argv)
     ex = app()
     ex.initUI()
     sys.exit(APP.exec_())
+
 
 if __name__ == "__main__" :
     run_app()

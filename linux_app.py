@@ -1,7 +1,6 @@
 from PyQt5.QtWidgets import  QDialog,  QLabel , QPushButton , QCheckBox , QTextBrowser 
 import PyQt5.QtCore
 
-
 class linux_gui (QDialog) :
    "linux Gui dialog (title , parent=None)"
    def __init__(self , title , parent=None) :
@@ -23,7 +22,7 @@ class linux_gui (QDialog) :
       self.show()
    
    def labels(self):
-      "All window labels"
+      "All window's labels"
       user = QLabel("User" , self)
       user.move(20,20)
       group = QLabel("Group" , self)
@@ -32,7 +31,7 @@ class linux_gui (QDialog) :
       others.move(20,87)
       
    def check_boxs (self):
-      "All window checkboxs"
+      "All window's checkboxs"
       self.checks = [
       #for user/owner
       [QCheckBox("Read [r]" , self), QCheckBox("Write [w]" , self), QCheckBox("Execute [x]" , self)] ,\
@@ -53,10 +52,9 @@ class linux_gui (QDialog) :
       self.checks[2][0].move(70,85)
       self.checks[2][1].move(150,85)
       self.checks[2][2].move(240,85)
-
          
    def buttons(self):
-      "All window buttons "
+      "All window's buttons "
       calc_button = QPushButton("Calc",self)
       calc_button.move(40,250)
       calc_button.clicked.connect(self.calc)
@@ -75,9 +73,10 @@ class linux_gui (QDialog) :
       self.result = QTextBrowser(self)
       self.result.setStyleSheet("font-size:16px")
       self.result.setGeometry(20,120 , 310 , 100)
-
    
-   #button actions
+   #######################
+   ## slots for buttons ##
+   #######################
    def clear (self) :
       "clear button action "
       self.result.setText("")
@@ -85,7 +84,9 @@ class linux_gui (QDialog) :
          for i in ugo:
             i.setChecked(False)
 
-   
+   ##################
+   ## core methods ## 
+   ##################
    def calc (self):
       "calc button action "
       res_number , res_character = [] , []
@@ -97,7 +98,6 @@ class linux_gui (QDialog) :
          res_character .append(character[chmod])
          res_number.append(chmod)
          check = 0
-      
       #reformat res 
       self.result.setText("\nNumber Code\t" + "".join( [str(i) for i in res_number]) +\
                           "\n" + "Attributes\t\t" + "".join(res_character))

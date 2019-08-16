@@ -4,14 +4,12 @@ from PyQt5.QtWidgets import QApplication , QDialog , QPushButton , QLabel ,QText
 from PyQt5.QtGui import QFont  
 
 class stopwatch_gui (QDialog):
-    "PyQt GUI"
+    "Stopwatch Dialog (title : str , parent:None)"
     def __init__(self,title,parent=None):
         super().__init__(parent)
         #Geometry 
         self.title = title
         self.left , self.top , self.width , self.height = 100 , 100 , 600 , 230
-        
-        #Backend
         
         self.labels()
         self.buttons()
@@ -31,13 +29,13 @@ class stopwatch_gui (QDialog):
         self.show()
         
     def labels (self):
-        "any labels in any place in 'main_window'"
+        "all window's labels "
         self.lb1 = QLabel("00 : 00 : 00 : 00" , self)
         self.lb1.setGeometry (200,20,400,50)
         self.lb1.setFont(QFont("Times" , 30))
     
     def buttons (self):
-        "any buttons in any place in 'main_window'"
+        "all window's label"
         self.b1 = QPushButton("Start" , self)
         self.b1.move(10,10)
         self.b1.setToolTip("Start Stopwatch")
@@ -75,12 +73,16 @@ class stopwatch_gui (QDialog):
         self.res.setGeometry(100,90,480,100)
         self.res.setFont(QFont("Time" , 20))
     
+    ###################    
+    ## Slots Methods ##
+    ###################
     def start_action (self):
         "method for start button"
         try :
             self.startcount.start()
         except:
             pass    
+    
     def pause_action (self):
         "method for pause button"
         self.startcount.flag=0
@@ -104,6 +106,7 @@ class stopwatch_gui (QDialog):
         self.lb1.setText("00 : 00 : 00 : 00")
     
     def lap_action (self):
+        "take snapshot of time as a text and show it in the text_browser "
         text = str(self.startcount.hr) + " : " + str(self.startcount.mn) + " : " +\
             str(self.startcount.sc) + " : " + str(self.startcount.ss)+"\n"
         text = self.startcount.make_00(self.startcount.hr , self.startcount.mn ,self.startcount.sc , self.startcount.ss) +"\n"
@@ -111,16 +114,21 @@ class stopwatch_gui (QDialog):
         self.res.setText(self.text)
     
     def clear_action (self):
+        "clear all lap results"
         self.text=""
         self.res.clear()
             
     def quit_ (self) :
-        "method for quit button"
+        "action quit button"
         self.startcount.flag=0
         self.close()
         
+
+############################
+## (act) stopwatch Thread ##
+############################
 class act (threading.Thread) :
-    "Thread for stop watch"
+    "Thread for stop watch (lb: Qlabel , hr:int , mn:int , sc:int , ss:int )"
     def __init__(self,lb,hr,mn,sc,ss):
         super().__init__()
         self.lb , self.hr , self.mn , self.sc , self.ss , self.flag = lb , hr , mn , sc , ss , 1

@@ -1,17 +1,13 @@
 import sys , os
 from math import sqrt
 from datetime import datetime
-from PyQt5.QtWidgets import QApplication , QMainWindow , QPushButton ,\
+from PyQt5.QtWidgets import QApplication , QMainWindow , QPushButton , QDialog,\
      QLabel , QRadioButton , QComboBox , QMessageBox , QHBoxLayout , QVBoxLayout,\
-      QGroupBox , QLineEdit 
+      QGroupBox , QLineEdit , QTextBrowser
 from PyQt5.QtGui import QFont 
 
-############
-# GUI QT 5 #
-############
-
 class ohm_gui (QMainWindow) :
-    "the whole app GUI"
+    "Main Window (title : str , parent=None)"
     def __init__ (self,title , parent=None):
         "__init__ function"
         super().__init__(parent)
@@ -21,8 +17,10 @@ class ohm_gui (QMainWindow) :
         self.width = 770
         self.height = 300
         
+        self.log_dialog = log(self.title + " [Log]",self)
+        
     def initUI (self):
-        "Initilization UI "
+        "main window "
         self.setGeometry(self.left , self.top , self.width , self.height)
         self.setWindowTitle(self.title)
         self.setMinimumWidth(self.width)
@@ -146,6 +144,7 @@ class ohm_gui (QMainWindow) :
         all_units.setLayout(units)
                 
     def buttons (self):
+        "all window's buttons"
         self.calc = QPushButton ("Calc",self)
         self.calc.move(70,110)
         self.calc.setToolTip("Calculate Values")
@@ -158,6 +157,11 @@ class ohm_gui (QMainWindow) :
         self.clear.setDisabled(True)
         self.clear.clicked.connect(self.clear_input)
         
+        logs = QPushButton ("Logs" , self)
+        logs.move(415,250)
+        logs.setToolTip("Read log file")
+        logs.clicked.connect(self.show_log)
+        
         about = QPushButton ("About",self)
         about.move(530,250)
         about.clicked.connect(self.about_app)
@@ -167,11 +171,10 @@ class ohm_gui (QMainWindow) :
         quit_.setToolTip("Exit")
         quit_.setStyleSheet("background:red;color:white")
         quit_.clicked.connect(self.close_app)
-        
-    #*****************
-    # OPTIONS ACTION *
-    #*****************
     
+    ##################
+    ## Core Methods ##        
+    ##################
     def enable_all (self):
         "enable inputs and calc button"
         self.value1.setDisabled(False)
@@ -198,11 +201,13 @@ class ohm_gui (QMainWindow) :
             return self.power.text()
 
     def clear_input(self):
+        "clear inputs and results"
         self.res.setText("Res = ------ ")
         self.value1.clear()
         self.value2.clear()
     
     def unit_value (self) :
+        "return unit type , using later for calculations"
         if self.unit_normal.isChecked():
             return "normal"
         elif self.unit_kilo.isChecked():
@@ -214,10 +219,9 @@ class ohm_gui (QMainWindow) :
         elif self.unit_tera.isChecked():
             return "tera"
     
-            
-    #******************
-    # SLOTS FUNCTIONS *
-    #******************
+    ###################            
+    ## SLOTS METHODS ##
+    ###################
     def select_option (self):
         "man select [Radio buttons] chose Resistance | Voltage | Current | Power \
         to perparing the calculations"
@@ -283,20 +287,26 @@ class ohm_gui (QMainWindow) :
         return status
     
     def clear_by_sub_options (self):
+        "clear all data (inputs and result) when sub_options changed"
         self.value1.clear()
         self.value2.clear()
         self.res.setText("Res = ------ ")
     
     def change_unit(self):
+        "Run calculation when unit options changes"
         self.run_calc()
         
     def close_app (self):
         "close application"
         self.close()
+    
+    def show_log (self):
+        "open new dailog to read the log file"
+        self.log_dialog.initUI()
         
     def about_app (self):
         "application description"
-        QMessageBox().about(self,"About Application" , "OLC [Ohm Law Calc] Version 0.2 \n\n\
+        QMessageBox().about(self,"About Application" , "OLC [Ohm Law Calc] Version 0.3 \n\n\
         Simple Application to calculate the whole Ohm law \n\n\
         [ Resistance | Voltage | Current | Power ]\n\n\
         Khaledfathi@protonmail.com")
@@ -314,7 +324,7 @@ class ohm_gui (QMainWindow) :
         except Exception as e :
             error = "ERROR : Enter Only Numbers"
             with open ("result.txt", "a") as f : #save on log file
-                f.write("\n--------\n\n" + str(datetime.now()) + "\n" + self.lb1.text() + " = " + self.value1.text() + "\n" + self.lb2.text() + " = " + self.value2.text() + "\n" + error + "\nCode : " + str(e))
+                f.write("\n--------\n\nDate : " + str(datetime.now())[:10]+ "\nTime : " + str(datetime.now())[11:19] + "\n" + self.lb1.text() + " = " + self.value1.text() + "\n" + self.lb2.text() + " = " + self.value2.text() + "\n" + error + "\nCode : " + str(e))
             self.res.setText(error)
             return 
         type_ = self.select_sub_option()["type"] 
@@ -334,20 +344,74 @@ class ohm_gui (QMainWindow) :
             elif unit == "tera" :
                 result_text = self.type_checked() + " = " + str(round(self.final[0]/1000000000000, 10)) +  " Tera" + self.final[3] + "\n" + str(self.final[2]) + " = " +  str(round(self.final[1]/1000000000000, 8)) + " Tera" + self.final[4]
             with open ("result.txt", "a") as f :
-                f.write("\n--------\n\n" + str(datetime.now()) + "\n" + self.lb1.text() + " = " + self.value1.text() + "\n" + self.lb2.text() + " = " + self.value2.text() + "\n" + result_text)
+                f.write("\n--------\n\nDate : " + str(datetime.now())[:10]+ "\nTime : " + str(datetime.now())[11:19] + "\n" + self.lb1.text() + " = " + self.value1.text() + "\n" + self.lb2.text() + " = " + self.value2.text() + "\n" + result_text)
             self.res.setText(result_text)
         except Exception as e:
             error = "Math Error : Can not dived zero" 
             with open ("result.txt", "a") as f :
-                f.write("\n--------\n\n" + str(datetime.now()) + "\n" + self.lb1.text() + " = " + self.value1.text() + "\n" + self.lb2.text() + " = " + self.value2.text() + "\n" + error + "\nCode : " + str(e))
+                f.write("\n--------\n\nDate : " + str(datetime.now())[:10]+ "\nTime : " + str(datetime.now())[11:19] + "\n" + self.lb1.text() + " = " + self.value1.text() + "\n" + self.lb2.text() + " = " + self.value2.text() + "\n" + error + "\nCode : " + str(e))
             self.res.setText( error )
 
-#############
-# Ohm Class #
-#############
-
+#######################
+## Logs Dialog Class ##
+#######################
+class log (QDialog):
+    "Log dialog , show the log result of ohm app\
+    (title : str , parent : Qwidget )"
+    def __init__(self,title,parent=None) :
+        super().__init__(parent)
+        self.title = title 
+        self.left , self.top , self.width , self.height = 200,150,300,300
+        
+    def initUI(self) :
+        "Main Dialog window"
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left , self.top , self.width , self.height)  
+        self.buttons()
+        self.text_browser()
+        self.show()
+        
+    def buttons(self):
+        "All dialog buttons widget"
+        quit_button = QPushButton("Quit" , self)
+        quit_button.setToolTip("Exit")
+        quit_button.move(150,265)
+        quit_button.clicked.connect(self.close)
+        quit_button.setStyleSheet("background:red;color:white")
+        
+        clear_button = QPushButton("Clear Logs" , self)
+        clear_button.move(50,265)
+        clear_button.clicked.connect(self.clear_log)
+        
+    
+    def text_browser(self):
+        "Dialog text_browse widget"
+        self.res = QTextBrowser(self)
+        self.res.setGeometry(20,20,250,230)
+        try :
+            with open ("result.txt","r") as f :
+                self.res.setText(f.read())
+        except:
+            self.res.setText("File Path : "+os.getcwd()+"/result.txt \n\nERROR : File Not Found\nOr you didnt do any thing to log yet")
+        
+    #core Methods
+    def clear_log (self):
+        "remove all data in log file , and show message in text_browser"
+        try :
+            with open ("result.txt" , "r") as f : #check if file exist first 
+                pass
+            with open("result.txt","w") as f : 
+                f.write("")
+            self.res.setText("Cleared")
+        except :
+            self.res.setText("File Path : "+os.getcwd()+"/result.txt" "\n\nNo File to clear")
+    
+############################
+## Ohm Calculations Class ##
+############################
 class ohm :
-    "Ohm calculations and results object"
+    "Ohm calculations and results object\
+    (type_ : str ,option : int , value1 : int/float , value2 : int/float)"
     def __init__ (self,type_,option,value1 ,value2):
         self.type_ = type_ 
         self.option = option

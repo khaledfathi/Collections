@@ -2,14 +2,14 @@ from PyQt5.QtWidgets import QDialog , QLabel , QPushButton , QComboBox ,\
      QTextBrowser , QDoubleSpinBox 
 
 class temp_gui (QDialog):
-    "temp gui dialog ( parent=None )"
+    "temp gui dialog ( title :str , parent=None )"
     def __init__(self,title,parent=None):
         super().__init__(parent)
         self.title = title
         self.left , self.top , self.width , self.height = 200,100,370,280 
     
     def initUI (self):
-        "main app window"
+        "main window"
         self.setWindowTitle(self.title)
         self.setGeometry(self.left , self.top , self.width , self.height)
         
@@ -23,8 +23,7 @@ class temp_gui (QDialog):
         self.show()
         
     def labels (self):
-        "All window labels"
-        "labels widgets"
+        "All window's labels"
         lb_temp = QLabel("Temperature",self)
         lb_temp.move(20,50)
         self.lb_unit = QLabel ("Celsius",self)
@@ -54,7 +53,7 @@ class temp_gui (QDialog):
         quit_button.clicked.connect(self.close)
 
     def combo_boxes (self) :
-        "All window combo_boxs"
+        "All window's combo_boxs"
         self.from_list = QComboBox(self)
         self.from_list.move(80,105)
         self.from_list.addItem("Celsius")
@@ -74,9 +73,9 @@ class temp_gui (QDialog):
         self.result.setText("TEST TEXT BROWSER")
         self.result.setGeometry(50,150,250,40)
     
-    #############
-    ## actions ##
-    #############
+    ##################
+    ## Slot Methods ##
+    ##################
     def check_box_select(self) :
         "change unit text while changing the from list "
         self.lb_unit.setText(self.from_list.currentText())
