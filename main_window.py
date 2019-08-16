@@ -7,7 +7,7 @@
 #Last Updates --: 16/08/2019
 #Author --------: Khaled Fathi [KhaledFathi@protonmail.com]
 #Code ----------: Python3.6 | Frameworks : PyQt5
-#repository ----: None
+#repository ----: https://github.com/khaledfathi/Collections
 
 import sys , time , math , os , pathlib
 #from app lib
